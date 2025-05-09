@@ -1,6 +1,6 @@
-# Estadística TP2 – Rama `master`
+# Estadística – Rama `master`
 
-Esta rama contiene diversas soluciones desarrolladas por los integrantes del grupo durante el trabajo práctico nº2 de la materia Estadística.
+Esta rama contiene diversas soluciones desarrolladas por los integrantes del grupo durante el trabajo práctico nº1 de la autoevaluación nª2 de la materia Estadística.
 
 ## Sobre esta rama
 

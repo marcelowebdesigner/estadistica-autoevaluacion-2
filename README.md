@@ -1,4 +1,4 @@
-# Estadística TP2
+# Estadística 
 
 Este repositorio contiene el trabajo práctico nº1 de la autoevaluación nª2 de la materia Estadística.
 

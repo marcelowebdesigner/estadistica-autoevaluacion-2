@@ -1,0 +1,178 @@
+---
+title: "Autoevauacion 2"
+author: "Grupo 10"
+date: "2025-04-22"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+`
+```{r}
+#Construye un vector llamado x con los elementos: 4, NA, 2 y 1.
+
+x=c(4,NA,2,1)
+
+
+```
+Calcule la media del vector anterior (del paso 1).
+```{r}
+mean(x,na.rm=TRUE)# con na.rm =TRUE evitamos error en calculo de media
+
+```
+Selecciona los elementos mayores a 3 del vector anterior (del paso 2).
+```{r}
+x=x[x>3& !is.na(x)]# filtramos los mayores a 3 y aquellos que no sean NA
+x
+```
+Cargue los datos “trees” del dataset (el conjunto de datos que viene instalado por defecto en R) y observe su encabezado
+```{r}
+data(trees)
+head(trees)
+```
+
+Instala el la biblioteca "vegan", actívalo y carga la base de datos "eurodist". Solicita ayuda en el entorno R para conocerlo y cuéntanos de que trata dicha base de datos. 
+
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+
+install.packages("vegan")
+library("vegan")
+
+data("eurodist")
+?eurodist #abrira ayuda de R con informacion de dataset 
+
+```
+La base de datos eurodist da informacion de distancias en km entre 21 ciudades de Europa. Los datos son tomados de una tabla en la Enciclopedia de Cambridhe
+
+Importa el archivo movie.txt y guárdalo en un objeto que se llame "data_movie_txt"
+```{r message=FALSE, warning=FALSE}
+library(readxl)
+data_movie_xlsx <- read_excel("movies.xlsx")
+head(data_movie_xlsx)
+
+```
+Importa el archivo movie.xlsx y guárdalo en un objeto que se llame "data_movie_xlsx"
+```{r}
+library(readxl)
+data_movie_xlsx <- read_excel("movies.xlsx")
+head(data_movie_xlsx)#mostramos primeros datos
+```
+Importa el archivo 2004_temperatura del suelo.csv y guárdalo en un objeto llamado "temperatura_suelo". 
+
+
+```{r}
+url_descarga_directa <- "https://drive.google.com/uc?export=download&id=19on5CouQUZ_h-wMacMS3ahd00VuO_fJV"
+temperatura_suelo <- read.csv(url_descarga_directa)
+print("Estructura del objeto:")
+str(temperatura_suelo)
+print("Primeras filas del objeto:")
+head(temperatura_suelo)
+print("Resumen estadístico:")
+summary(temperatura_suelo)
+saveRDS(temperatura_suelo, file = "temperatura_suelo_guardado.rds")
+```
+
+
+
+BONUS: Observando el ejemplo de los datos del COVID-19,  https://datos.gob.ar/dataset/salud-covid-19-casos-registrados-republica-argentina/archivo/salud_fd657d02-a33a-498b-a91b-2ef1a68b8d16?utm_source=chatgpt.com, grafica los datos de acuerdo a dos variables que sean de tu interés. Comenta los resultados obtenidos.
+
+```{r}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(lubridate)
+
+
+ruta_csv_local <- "D:/Documentos/Jessica III/Maestría Ciencias de Datos/Curso_Estadistica/Ejercicios_R/Covid19Casos.csv"
+print(paste("Leyendo archivo COMPLETO con fread desde:", ruta_csv_local))
+datos_covid <- fread(ruta_csv_local, header = TRUE)
+
+#encabezado <- fread(ruta_csv_local, nrows = 0) 
+# print(colnames(encabezado))
+
+columnas_a_leer <- c("sepi_apertura", "clasificacion_resumen", "fallecido") 
+
+print(paste("Leyendo solo columnas seleccionadas con fread desde:", ruta_csv_local))
+datos_covid_parcial <- fread(ruta_csv_local, select = columnas_a_leer)
+
+print("Dimensiones del data.table parcial:")
+print(dim(datos_covid_parcial))
+print("Primeras filas:")
+print(head(datos_covid_parcial))
+
+
+#Se toma una muestra aleatoria
+set.seed(123) #Se fija el inicio para que cada vez que se abra genere los mismos numeros aleatorios
+  print("Tomando una muestra aleatoria de 100,000 filas...")
+
+datos_covid_parcial_m_aleatoria <- datos_covid_parcial %>%
+    sample_n(size = 100000, replace = FALSE)
+
+  print("Dimensiones de la muestra aleatoria (data.table):")
+  print(dim(datos_covid_parcial_m_aleatoria))
+  print("Primeras filas de la muestra aleatoria (data.table):")
+  print(head(datos_covid_parcial_m_aleatoria))
+
+
+#Revisar que los datos están bien
+if(!is.null(datos_covid_parcial_m_aleatoria))
+  print("Procesando los datos...")
+
+```
+
+
+```{r}
+#Revisar nombres de columnas
+print("Nombres de columnas:")
+print(colnames(datos_covid_parcial_m_aleatoria))
+
+tryCatch({
+#Filtro de casos confirmados y fallecidos
+fallecidos_confirmados <- datos_covid_parcial_m_aleatoria %>%
+  filter(clasificacion_resumen == "Confirmado", fallecido == "SI")
+
+#Agrupamiento por semana y contar
+fallecidos_por_semana <- fallecidos_confirmados %>%
+  group_by(sepi_apertura) %>%
+  summarise(total_fallecidos = n()) %>%
+  filter(!is.na(sepi_apertura), sepi_apertura > 0)
+
+print("Primeras filas de datos procesados (fallecidos por Semana Epi):")
+print(head(fallecidos_por_semana))
+procesamiento_exitoso <- TRUE
+
+},
+error = function(e) {
+  print(paste("Error durante el procesamiento:", e$message))
+  print("Verifica los nombres de columnas y valores.")
+  procesamiento_exitoso <- FALSE
+})
+
+if(exists("fallecidos_por_semana") && nrow(fallecidos_por_semana) > 0) {
+  print("Generando gráfico:")
+  
+  grafico_fallecidos <- ggplot(fallecidos_por_semana, aes(x= sepi_apertura, y= total_fallecidos))+
+    geom_line(color = "red")+
+    geom_point(color = "darkred", size= 0.5)+
+    labs(
+      title = "Fallecidos confirmados por Covid-19 por Semana Epidemiológica",
+      subtitle = "República Argentina",
+      x = "Semana Epidemiológica (apertura de caso)",
+      y = "Número de fallecidos",
+      caption = "https://sisa.msal.gov.ar/datos/descargas/covid-19/files/Covid19Casos.zip"
+    )+
+    theme_minimal()+
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) #Mejora legibilidad
+  
+  print(grafico_fallecidos)
+} else {
+  print("No se pudo procesar el gráfico.")
+}
+```
+

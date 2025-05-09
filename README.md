@@ -1,6 +1,6 @@
 # Estadística TP2
 
-Este repositorio contiene el trabajo práctico nº2 de la materia Estadística.
+Este repositorio contiene el trabajo práctico nº1 de la autoevaluación nª2 de la materia Estadística.
 
 ## Estructura del repositorio
 
@@ -9,7 +9,7 @@ Este repositorio contiene el trabajo práctico nº2 de la materia Estadística.
 
 ## Contenido
 
-El trabajo aborda los ejercicios planteados en el TP2, aplicando técnicas estadísticas y visualización de datos.
+El trabajo aborda los ejercicios planteados, aplicando técnicas estadísticas y visualización de datos.
 
 ---
 
